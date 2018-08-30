@@ -1,5 +1,6 @@
 import React,{Component} from 'react'
 import{StyleSheet,Text,TextInput,Image,TouchableOpacity,View} from'react-native'
+import { AsyncStorage } from "react-native"
 // import {
 //     createStackNavigator,
 //   } from 'react-navigation';
@@ -9,7 +10,8 @@ export class Signin extends Component{
         super(props);
         this.state={
           email:'',
-          password:''
+          password:'',
+         
         }
 
     }
@@ -29,11 +31,13 @@ export class Signin extends Component{
              placeholder="Password"  onChangeText={(password)=>this.setState({password})}/>
               <TouchableOpacity style={styles.signin}
              onPress={() =>{
-              this.props.navigation.navigate('Tab')
+              // this.props.navigation.navigate('Tab')
               //  if(this.state.email==this.props.navigation.state.params.email && this.state.password==this.props.navigation.state.params.password)
               //  this.props.navigation.navigate('Tab')
               //  else
               //  alert('InValid Email or Password')
+              this.apiFunction();
+             
               }}>
             
             <Image source={require('./orange.png')}  />
@@ -47,7 +51,59 @@ export class Signin extends Component{
        );
     }
 
+    baseurl="http://192.168.12.39:7000/api/"
+    apiFunction= async()=> {
+     try {
+       let response = await fetch(
+         this.baseurl+"v1/user/authenticateUser",{
+           
+             method: 'POST',
+             headers: {
+               Accept: 'application/json',
+               'Content-Type': 'application/json',
+             },
+             body: JSON.stringify({
+              
+               email:this.state.email,
+               password:this.state.password
+
+             }),
+            
+         }
+        
+       );
+       let responseJson = await response.json();
+      // alert('response'+responseJson.success)
+       this.setState({bool:responseJson.success})
+       if(responseJson.success)
+       {
+        
+        this.storeData(responseJson.token);
+        this.props.navigation.navigate('Tab')
+       }
+       else
+       {
+         alert('error in signin')
+       }
+       return responseJson;
+      
+     } catch (error) {
+       console.error(error);
+     }
+   }
+
+   storeData = async (access) => {
+    try {
+      await AsyncStorage.setItem('key',access);
+      alert('success')
+    } catch (error) {
+      // Error saving data
+      alert('err')
+    }
+  }
+  
 }
+
 const styles=StyleSheet.create({
     container: {
        flex: 1,

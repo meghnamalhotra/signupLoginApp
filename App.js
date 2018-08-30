@@ -13,6 +13,7 @@ import{Signup} from './signUp'
 import{User} from './main'
 import{Prof} from './profile'
 import{Settings} from './settings'
+import{Userlist} from './userList'
 import {
   createStackNavigator,createBottomTabNavigator
 } from 'react-navigation';
@@ -38,9 +39,10 @@ const App = createStackNavigator({
   }
 });
  const TabNavigation=createBottomTabNavigator({
-  User:{screen:User},
+   UserList:{screen:Userlist},
+ // User:{screen:User},
   Prof:{screen:Prof},
-  Settings:{screen:Settings}
+ // Settings:{screen:Settings}
  })
 
  export default App;
